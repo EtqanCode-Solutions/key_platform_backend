@@ -49,6 +49,47 @@ exports.createExam = async (req, res, next) => {
     next(err);
   }
 };
+exports.listExams = async (req, res, next) => {
+  try {
+    const rows = await Exam.findAll({
+      order: [['createdAt', 'DESC']],
+      // لو عايز تلخّص بدون العلاقات علشان الأداء:
+      attributes: { exclude: [] }
+    });
+    res.json({ success: true, data: rows });
+  } catch (err) {
+    next(err);
+  }
+};
+
+// === NEW (يرجع الامتحان ومعاه الأسئلة والاختيارات)
+exports.getExamById = async (req, res, next) => {
+  try {
+    const examId = parseInt(req.params.examId, 10);
+    const exam = await Exam.findByPk(examId, {
+      include: [
+        {
+          model: ExamQuestion,
+          as: 'questions',
+          separate: true,
+          order: [['order_index', 'ASC']],
+          include: [
+            {
+              model: ExamChoice,
+              as: 'choices',
+              separate: true,
+              order: [['key', 'ASC']]
+            }
+          ]
+        }
+      ]
+    });
+    if (!exam) return res.status(404).json({ success: false, message: 'Exam not found' });
+    res.json({ success: true, data: exam });
+  } catch (err) {
+    next(err);
+  }
+};
 
 exports.addQuestions = async (req, res, next) => {
   try {

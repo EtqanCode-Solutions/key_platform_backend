@@ -18,5 +18,6 @@ router.get('/',    adminSecret, ctrl.list);       // GET    /api/students/
 router.get('/:id', adminSecret, ctrl.getById);    // GET    /api/students/:id
 router.patch('/:id', adminSecret, ctrl.adminUpdate); // PATCH  /api/students/:id
 router.delete('/:id', adminSecret, ctrl.adminDelete); // DELETE /api/students/:id
+router.post('/', adminSecret, ctrl.adminCreate); 
 
 module.exports = router;

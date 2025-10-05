@@ -18,4 +18,7 @@ router.post('/:notificationId/send', adminSecret, ctrl.sendExisting);
 // إزالة إشعار لطالب محدد (soft delete)
 router.delete('/:notificationId/recipients/:studentId', adminSecret, ctrl.removeForStudent);
 
+router.get('/', adminSecret, ctrl.list);
+router.get('/:notificationId', adminSecret, ctrl.getOne);
+
 module.exports = router;

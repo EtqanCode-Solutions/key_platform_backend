@@ -62,6 +62,29 @@ exports.register = asyncHandler(async (req, res) => {
   res.status(201).json({ success: true, message: 'Registered', data: student, token });
 });
 
+exports.adminCreate = asyncHandler(async (req, res) => {
+  const { name, email, password, stage, is_active } = req.body;
+
+  if (!name || !email || !password) {
+    return res.status(400).json({ success: false, message: 'name, email, password are required' });
+  }
+
+  const exists = await Student.findOne({ where: { email } });
+  if (exists) return res.status(409).json({ success: false, message: 'Email already in use' });
+
+  const hash = await bcrypt.hash(password, 10);
+  const student = await Student.create({
+    name,
+    email,
+    password: hash,
+    stage,
+    is_active: (is_active === undefined ? true : !!is_active)
+  });
+
+  const out = student.toJSON(); // بيشيل password من toJSON()
+  return res.status(201).json({ success: true, message: 'Student created (admin)', data: out });
+});
+
 
 exports.login = asyncHandler(async (req, res) => {
   const { email, password } = req.body;

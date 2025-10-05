@@ -90,6 +90,9 @@ module.exports = {
     }
   },
 
+
+  
+
   // DELETE /api/admin/notifications/:notificationId
   // حذف الإشعار عالميًا (ويمسح روابطه)
   removeNotification: async (req, res, next) => {
@@ -178,4 +181,38 @@ module.exports = {
       next(err);
     }
   },
+  // GET /api/admin/notifications
+  // GET /api/admin/notifications  — رجّع كل الإشعارات (أحدث أولاً)
+list: async (req, res, next) => {
+  try {
+    const rows = await Notification.findAll({ order: [['createdAt', 'DESC']] });
+    return res.json({ success: true, data: rows });
+  } catch (err) {
+    next(err);
+  }
+},
+
+// GET /api/admin/notifications/:notificationId  — إشعار واحد (مع المستلمين اختياريًا)
+getOne: async (req, res, next) => {
+  try {
+    const { notificationId } = req.params;
+
+    // لو عندك associations مفعّلة بين Notification و NotificationRecipient:
+    // Notification.hasMany(NotificationRecipient, { as: 'recipients', foreignKey: 'notification_id' })
+    // NotificationRecipient.belongsTo(Notification, { foreignKey: 'notification_id' })
+
+    const row = await Notification.findByPk(notificationId, {
+      include: [
+        // احذف الـ include لو لسه ما عملتش associations
+        { model: NotificationRecipient, as: 'recipients', required: false }
+      ]
+    });
+
+    if (!row) return res.status(404).json({ success: false, message: 'Notification not found' });
+    return res.json({ success: true, data: row });
+  } catch (err) {
+    next(err);
+  }
+},
+
 };

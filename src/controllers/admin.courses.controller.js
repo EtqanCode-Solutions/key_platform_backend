@@ -31,7 +31,7 @@ exports.createCourse = asyncHandler(async (req, res) => {
     coverUrl: p.coverUrl,
     previewUrl: p.previewUrl,
     price: p.price,
-    original_price: p.originalPrice,
+    original_price: p.originalPrice,    
     is_free: !!p.free,
     rating: p.rating ?? 0,
     review_count: p.reviewCount ?? 0,

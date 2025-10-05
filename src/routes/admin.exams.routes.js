@@ -9,6 +9,8 @@ router.post('/', AdminExams.createExam);                // POST /api/admin/exams
 router.patch('/:examId', AdminExams.updateExam);        // PATCH /api/admin/exams/:examId
 router.patch('/:examId/publish', AdminExams.publish);   // PATCH /api/admin/exams/:examId/publish
 router.patch('/:examId/unpublish', AdminExams.unpublish); // PATCH /api/admin/exams/:examId/unpublish
-router.post('/:examId/questions/bulk', AdminExams.addQuestions); // POST /api/admin/exams/:examId/questions/bulk
+router.post('/:examId/questions/bulk', AdminExams.addQuestions);
+router.get('/', AdminExams.listExams);            // GET    /api/admin/exams
+router.get('/:examId', AdminExams.getExamById); // POST /api/admin/exams/:examId/questions/bulk
 
 module.exports = router;
