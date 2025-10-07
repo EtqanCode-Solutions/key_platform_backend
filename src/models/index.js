@@ -17,6 +17,11 @@ const ExamAnswer = require("./ExamAnswer")(sequelize);
 const Notification = require("./Notification")(sequelize);
 const NotificationRecipient = require("./NotificationRecipient")(sequelize);
 
+const SupportTicket = require("./SupportTicket")(sequelize);
+const SupportMessage = require("./SupportMessage")(sequelize);
+const Faq = require('./Faq')(sequelize);
+
+
 // Course ↔ Lessons
 Course.hasMany(Lesson, { foreignKey: "course_id", as: "lessons" });
 Lesson.belongsTo(Course, { foreignKey: "course_id", as: "course" });
@@ -111,6 +116,25 @@ NotificationRecipient.belongsTo(Student, {
   as: "student",
 });
 
+
+// Support: Student ↔ SupportTicket
+Student.hasMany(SupportTicket, { foreignKey: 'student_id', as: 'supportTickets' });
+SupportTicket.belongsTo(Student, { foreignKey: 'student_id', as: 'student' });
+
+// Support: Ticket ↔ Messages
+SupportTicket.hasMany(SupportMessage, { foreignKey: 'ticket_id', as: 'messages', onDelete: 'CASCADE' });
+SupportMessage.belongsTo(SupportTicket, { foreignKey: 'ticket_id', as: 'ticket' });
+
+// Support: Message sender (student or staff)
+Student.hasMany(SupportMessage, { foreignKey: 'sender_id', as: 'sentSupportMessages', scope: { sender_type: 'student' } });
+// (اختياري) ربط رسائل الموظفين بحساب User
+User.hasMany(SupportMessage, { foreignKey: 'sender_id', as: 'staffSupportMessages', scope: { sender_type: 'staff' } });
+
+// Support: Ticket assignee (User = موظّف دعم)
+User.hasMany(SupportTicket, { foreignKey: 'assigned_to', as: 'assignedTickets' });
+SupportTicket.belongsTo(User, { foreignKey: 'assigned_to', as: 'assignee' });
+
+
 module.exports = {
   sequelize,
   User,
@@ -127,4 +151,7 @@ module.exports = {
   ExamAnswer,
   Notification,
   NotificationRecipient,
+  SupportTicket,
+  SupportMessage,
+  Faq,
 };

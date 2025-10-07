@@ -144,3 +144,28 @@ exports.adminDelete = asyncHandler(async (req, res) => {
   await student.destroy();
   res.json({ success: true, message: 'Student deleted (admin)' });
 });
+
+// === Change own password
+exports.changePassword = asyncHandler(async (req, res) => {
+  const { current_password, new_password } = req.body;
+  if (!current_password || !new_password) {
+    return res.status(400).json({ success: false, message: 'current_password and new_password are required' });
+  }
+  if (String(new_password).length < 6) {
+    return res.status(400).json({ success: false, message: 'New password must be at least 6 chars' });
+  }
+
+  const student = await Student.findByPk(req.student.id);
+  if (!student) return res.status(404).json({ success: false, message: 'Student not found' });
+
+  const ok = await bcrypt.compare(current_password, student.password || '');
+  if (!ok) return res.status(401).json({ success: false, message: 'Current password is incorrect' });
+
+  const same = await bcrypt.compare(new_password, student.password || '');
+  if (same) return res.status(400).json({ success: false, message: 'New password must be different' });
+
+  student.password = await bcrypt.hash(new_password, 10);
+  await student.save();
+
+  res.json({ success: true, message: 'Password updated' });
+});

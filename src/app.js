@@ -21,6 +21,12 @@ const adminExamsRoutes = require('./routes/admin.exams.routes');
 const notificationsRoutes = require('./routes/notifications.routes');
 const adminNotificationsRoutes = require('./routes/admin.notifications.routes');
 
+const supportRoutes = require('./routes/support.routes');
+const adminSupportRoutes = require('./routes/admin.support.routes');
+
+const faqRoutes = require('./routes/faq.routes');
+const adminFaqRoutes = require('./routes/admin.faq.routes');
+
 
 
 const app = express();
@@ -50,7 +56,10 @@ app.use('/api/admin/exams', adminExamsRoutes);
 app.use('/api/notifications', notificationsRoutes);
 app.use('/api/admin/notifications', adminNotificationsRoutes);
 app.use('/api/admin', adminCourses);
-
+app.use('/api/support', supportRoutes);
+app.use('/api/admin/support', adminSupportRoutes);
+app.use('/api/faq', faqRoutes);
+app.use('/api/admin/faq', adminFaqRoutes);
 
 // Error handler
 app.use(errorHandler);
